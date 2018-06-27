@@ -95,7 +95,8 @@ app.post('/insert', function (req, res) {
       dbo.collection("Users").insertOne(body1,function(err,result){
         if(err) throw err;
         console.log(result);
-        var myjson4=JSON.stringify(result);
+        var myjson4=JSON.stringify(result.insertedId);
+        //console.log(myjson4);
           res.send(myjson4);
       });
      }
@@ -129,6 +130,30 @@ app.post('/update', function (req, res) {
 		if(err) throw err;
 		console.log("document updated");
 		});
+	//var myjson5 = JSON.stringify(result);
+});
+
+app.post('/citydata', function (req, res)
+ {
+	var body1 = req.body;
+	console.log(body1._id);
+	if(!body1._id)
+	{
+      res.send(JSON.stringify({ mess: " parameter missing"}));
+    }
+    else
+    {
+    	dbo.collection("City").find({sid: new mongodb.ObjectID(body1._id)}).toArray(function(err,result)
+    	{
+        if(err) throw err;
+        var myjson4=JSON.stringify(result);
+        console.log(myjson4);
+        res.send(myjson4);
+     
+       });
+
+    }
+
 });
 
 

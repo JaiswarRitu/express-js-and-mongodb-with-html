@@ -1,300 +1,548 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Test project</title>
-    
-	<script>
-		window.onload = function()
-		{
+	<head>
+		<title>Test project</title>
+	    <style>
+	        #table {
+			  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+			  border-collapse: collapse;
+			  width: 100%;
+			}
+
+			#table td, #table th {
+			  border: 1px solid #ddd;
+			  padding: 8px;
+			}
+
+			#table tr:nth-child(even){background-color: #f2f2f2;}
+
+			#table tr:hover {background-color: #ddd;}
+
+			#table th {
+			  padding-top: 12px;
+			  padding-bottom: 12px;
+			  text-align: left;
+			  background-color: lightslategrey;
+			  color: white;}
+			.button {
+			    background-color: grey;
+			    border: none;
+			    color: white;
+			    padding: 5px 10px;
+			    text-align: center;
+			    text-decoration: none;
+			    display: inline-block;
+			    font-size: 14px;
+			    margin: 4px 2px;
+			    cursor: pointer;
+			}
+	        p{
+			   font-size:12px;
+			   color:red;
+		     }
+	        
+			
+	    </style>
+		<script>
+			window.onload = function()
+			{
+				document.getElementById("update").style.visibility = "hidden";
+				//document.getElementById("city").style.visibility = "hidden";
 				console.log("clicked!");
+				function onUpdateClick()
+				{ 
+					document.getElementById("update").style.visibility = "visible";
+					document.getElementById("submit").style.visibility = "hidden";	
+                    console.log("this",this);
+					var ids = this.getAttribute("oid");
+					var table=document.getElementById("table");
+					for(var i=1;i<table.rows.length;i++)
+					{
+						table.rows[i].onclick=function()
+						{   //console.log("Row index is: " + rows[i].rowIndex);
+						    console.log(this.rowIndex);
+						    var changes = this;
+							document.getElementById("update").style.visibility = "visible";
+							document.getElementById("submit").style.visibility = "hidden";										
+							document.getElementById("name").value=this.cells[2].innerText;
+							document.getElementById("mobile").value=this.cells[3].innerText;
+							document.getElementById("address").value=this.cells[4].innerText;
+							document.getElementById("city").value=this.cells[5].innerText;
+							document.getElementById("state").value=this.cells[6].innerText;
+							if(this.cells[7].innerText=="Female")
+							{
+								document.getElementById("female").checked=true;
+								document.getElementById("male").checked=false;
+					        }
+					        else
+					        {
+					            document.getElementById("male").checked=true;
+								document.getElementById("female").checked=false;
+					        }
+						
+				    
+
+						    document.getElementById("update").onclick = function() 
+							{   
+								document.getElementById("submit").style.visibility = "visible";
+								document.getElementById("update").style.visibility = "hidden";
+								console.log("clicked");
+								var myData={};
+								myData._id=ids;
+								myData.name = document.getElementById("name").value;
+								myData.mobile = document.getElementById("mobile").value;
+								myData.address = document.getElementById("address").value;
+								myData.city = document.getElementById("city").value;
+								myData.state = document.getElementById("state").value;
+								console.log(myData.state);
+								if(document.getElementById("female").checked)
+								myData.gender = document.getElementById("female").value;
+								else myData.gender = document.getElementById("male").value;
+								console.log(myData.gender);
+								var xmlhttp = new XMLHttpRequest();  
+								xmlhttp.open("POST", "http://localhost:3000/update");
+								xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+								xmlhttp.send(JSON.stringify(myData));
+								//ocument.getElementById("get-users").action = action;
+								changes.cells[2].innerText=myData.name;
+								changes.cells[3].innerText=myData.mobile;
+								changes.cells[4].innerText=myData.address;
+								changes.cells[5].innerText=myData.city;
+								changes.cells[6].innerText=myData.state;
+								changes.cells[7].innerText=myData.gender;
+
+								document.getElementById("reset").click();	
+								console.log(myData);
+		                        //this.cells[2].innerText=myData.name;
+
+		                    }      
+                        }
+                    }
+                }        
+                function onDeleteClick()
+				{
+					var myData1={};
+					console.log(this.getAttribute("oid"));
+					myData1._id = this.getAttribute("oid");
+					// myData1._id = document.getElementsByTagName("button")[i+2].getAttribute("oid");
+					var xmlhttp = new XMLHttpRequest(); 
+					xmlhttp.open("POST", "http://localhost:3000/delete");
+					xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+					xmlhttp.send(JSON.stringify(myData1));
+					console.log(JSON.stringify(myData1));
+					var tab = document.getElementById("table");
+					tab.deleteRow(this.parentNode.parentNode.rowIndex);        		
+					//var ids_id = this.getAttribute(oid);
+	            }
+                function onselectstate1()
+                {
+                   var myData1={};
+                   var option = document.getElementById("state");
+                   var my = option.options[option.selectedIndex];
+                   console.log(my);
+                   myData1._id = my.getAttribute("value");
+                   //myData1 =  document.getElementById("state").value;
+                   console.log(myData1._id);
+                   var xmlhttp = new XMLHttpRequest(); 
+				   xmlhttp.open("POST", "http://localhost:3000/citydata");
+				   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				   xmlhttp.send(JSON.stringify(myData1));
+				   console.log(JSON.stringify(myData1));
+				   xmlhttp.onreadystatechange = function() 
+					{
+						if (this.readyState == 4 && this.status == 200) 
+						{
+	                       //console.log("statedata", xhttp1.responseText);
+	                       //var my1 = xhttp1.responseText;
+	                       var respObj2 = JSON.parse(xmlhttp.responseText);
+	                       console.log(respObj2);
+	                       var list2="<select Name=\"city\"  id=\"city\">";
+	                       //list2+="<option>select-city</option>";
+	                       for(var i = 0; i < respObj2.length; i++)
+		                    {
+		                    	list2+="<option value=\""+respObj2[i]._id+"\">"+respObj2[i].name+"</option>";
+		                    	//var my = respObj1[i]._id;
+		                    	//console.log(my); 	
+
+		                    }
+	                       list2+="</select Name>";
+	                       document.getElementById("city-data").innerHTML = list2;
+                        }
+						
+	                }
+                }
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() 
 				{
-				    if (this.readyState == 4 && this.status == 200) 
-				    {
-				       // Typical action to be performed when the document is ready:
-				       console.log("data", xhttp.responseText);
-				       var respObj = JSON.parse(xhttp.responseText);
-				       console.log(respObj[0]);
+					if (this.readyState == 4 && this.status == 200) 
+					{
+					       // Typical action to be performed when the document is ready:
+					    console.log("data", xhttp.responseText);
+					    var respObj = JSON.parse(xhttp.responseText);
+					    console.log(respObj[0]);
+                        var table = "<table id=\"table\" style=\"width:100%\" , \"border: 1px solid black\"> \
+					    <tr> \
+					    	<th>Delete</th>\
+					    	<th>Update</th>\
+					    	<th>Name</th> \
+					    	<th>Mobile</th> \
+					        <th>Address</th> \
+					        <th>City</th> \
+					        <th>State</th> \
+					        <th>Gender</th> \
+					    </tr>";    
+	                    for(var i = 0; i < respObj.length; i++)
+	                    {
+						    table += "<tr> \
+							<td> <button oid=\"" + respObj[i]._id + "\" class=\"delete-btn\" type=\"button\">Delete</button></td>\
+							<td> <button oid=\"" + respObj[i]._id + "\" class=\"update-btn\" type=\"button\">Update</button></td>\
+							<td>"+ respObj[i].name +"</td> \
+							<td>"+ respObj[i].mobile +"</td> \
+							<td>"+ respObj[i].address +"</td> \
+							<td>"+ respObj[i].city +"</td> \
+							<td>"+ respObj[i].state +"</td>\
+							<td>"+ respObj[i].gender +"</td> \
+							</tr>";
+						}
+						    table += "</table>";
+		                document.getElementById("user-data").innerHTML = table;
+		                
+                            console.log("btn", document.getElementsByClassName("delete-btn"));
+						    var del_arr = document.getElementsByClassName("delete-btn");
+			                for(var i = 0; i < del_arr.length; i++)
+							{	
+								del_arr[i].onclick = onDeleteClick;
+								
+							} 
 
-				       var table = "<table id=\"table\" style=\"width:100%\" , \"border: 1px solid black\"> \
-				        <tr> \
-				        <th>Delete</th>\
-				        <th>Update</th>\
-				           <th>Name</th> \
-				           <th>Mobile</th> \
-				           <th>Address</th> \
-				           <th>City</th> \
-				           <th>State</th> \
-				           <th>Gender</th> \
-				        </tr>";
-                         for(var i = 0; i < respObj.length; i++)
-                         {
-					         	table += "<tr> \
-						           <td> <button oid=\"" + respObj[i]._id + "\" class=\"delete-btn\" type=\"button\">Delete</button></td>\
-						           <td> <button oid=\"" + respObj[i]._id + "\" class=\"update-btn\" type=\"button\">Update</button></td>\
-						           <td>"+ respObj[i].name +"</td> \
-						           <td>"+ respObj[i].mobile +"</td> \
-						           <td>"+ respObj[i].address +"</td> \
-						           <td>"+ respObj[i].city +"</td> \
-						           <td>"+ respObj[i].state +"</td>\
-						           <td>"+ respObj[i].gender +"</td> \
-						         </tr>";
-					     }
-					        table += "</table>";
+		            
+		               
 
-					        document.getElementById("user-data").innerHTML = table;
-					        console.log("btn", document.getElementsByClassName("delete-btn"));
+						
+						//document.getElementById("get-update").innerHTML = table;
+		                console.log("update-btn", document.getElementsByClassName("update-btn"));
+		                var upd_arr = document.getElementsByClassName("update-btn");
+		                for(var i=0;i<upd_arr.length;i++)
+						{
 
-					        var del_arr = document.getElementsByClassName("delete-btn");
+							upd_arr[i].onclick = onUpdateClick;
+							   
+														//console.log(this.document.getElementsByClassName.parentElement)		
+							   
+						}       //console.log(JSON.stringify(myData));
+				    }  
 
-					        for(var i = 0; i < del_arr.length; i++)
-					        {	
-					        	
-					        	del_arr[i].onclick = function()
-					        	{
-					        		
-					        		//var ids_id = this.getAttribute(oid);
 
-					        		 var myData1={};
-					        		 console.log(this.getAttribute("oid"));
-					        		 myData1._id = this.getAttribute("oid");
-					        		// myData1._id = document.getElementsByTagName("button")[i+2].getAttribute("oid");
-					        		var xmlhttp = new XMLHttpRequest(); 
-							        xmlhttp.open("POST", "http://localhost:3000/delete");
-									xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-									xmlhttp.send(JSON.stringify(myData1));
-									console.log(JSON.stringify(myData1));
-								}
-							}
 
-							//document.getElementById("get-update").innerHTML = table;
-							        console.log("update-btn", document.getElementsByClassName("update-btn"));
-
-							        var upd_arr = document.getElementsByClassName("update-btn");
-
-							        for(var i=0;i<upd_arr.length;i++)
-							        {
-										upd_arr[i].onclick=function()
-										{
-											console.log("this",this);
-											var ids = this.getAttribute("oid");
-											var table=document.getElementById("table");
-											for(var i=1;i<table.rows.length;i++)
-											{
-												table.rows[i].onclick=function()
-												{    
-											
-													document.getElementById("name").value=this.cells[2].innerHTML;
-													document.getElementById("mobile").value=this.cells[3].innerHTML;
-													document.getElementById("address").value=this.cells[4].innerHTML;
-													document.getElementById("city").value=this.cells[5].innerHTML;
-													document.getElementById("state").value=this.cells[6].innerHTML;
-													if(this.cells[7].innerHTML=="Female")
-													{
-														document.getElementById("female").checked=true;
-														document.getElementById("male").checked=false;
-		                                             }
-		                                             else
-		                                             {
-		                                                document.getElementById("male").checked=true;
-														document.getElementById("female").checked=false;
-		                                             }
-			
-
-												}
-											}
-											//console.log(this.document.getElementsByClassName.parentElement);
-									        document.getElementById("update").onclick = function() 
-									        {   
-									        	console.log("clicked");
-									        	var myData={};
-									        	myData._id=ids;
-												myData.name = document.getElementById("name").value;
-												myData.mobile = document.getElementById("mobile").value;
-												myData.address = document.getElementById("address").value;
-												myData.city = document.getElementById("city").value;
-												myData.state = document.getElementById("state").value;
-												console.log(myData.state);
-												if(document.getElementById("female").checked)
-											    myData.gender = document.getElementById("female").value;
-											    else myData.gender = document.getElementById("male").value;
-											    console.log(myData.gender);
-												var xmlhttp = new XMLHttpRequest();  
-												xmlhttp.open("POST", "http://localhost:3000/update");
-												xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-					                            xmlhttp.send(JSON.stringify(myData));
-					                            console.log(myData);
-
-					                }     }    }       //console.log(JSON.stringify(myData));
-				     }    
 				}
-					
-					xhttp.open("GET", "http://localhost:3000/users", true);
-					xhttp.send();
-			
-			/*document.getElementById("get-city").onclick = function() {
-				console.log("clicked!");
-				var xhttp = new XMLHttpRequest();
-				xhttp.onreadystatechange = function() {
-				    if (this.readyState == 4 && this.status == 200) {
-				       // Typical action to be performed when the document is ready:
-				       console.log("data", xhttp.responseText);
-				       var respObj1 = JSON.parse(xhttp.responseText);
-				       console.log(respObj1[0]);
-				       var table1 = "<table style=\"width:100%\"> \
-				        <tr> \
-				           <th>Id</th> \
-				           <th>Name</th> \
-				        </tr>";
-
-				        for(var i = 0; i < respObj1.length; i++){
-				         	table1 += "<tr> \
-					           <td>"+ respObj1[i].id +"</td> \
-					           <td>"+ respObj1[i].name +"</td> \
-					         </tr>";
-				         }
-				       table1 += "</table>";
-
-				       document.getElementById("city-data").innerHTML = table1;
-				    }
-				};
-				xhttp.open("GET", "http://localhost:3000/city", true);
+						
+				xhttp.open("GET", "http://localhost:3000/users", true);
 				xhttp.send();
-			}
 
-			document.getElementById("get-states").onclick = function() {
-		    	console.log("clicked!");
-				var xhttp = new XMLHttpRequest();
-				xhttp.onreadystatechange = function() {
-				    if (this.readyState == 4 && this.status == 200) {
-				       // Typical action to be performed when the document is ready:
-				       console.log("data", xhttp.responseText);
-				       var respObj2 = JSON.parse(xhttp.responseText);
-				       console.log(respObj2[0]);
+				var xhttp1 = new XMLHttpRequest();
+				xhttp1.onreadystatechange = function() 
+				{
+					if (this.readyState == 4 && this.status == 200) 
+					{
+                       //console.log("statedata", xhttp1.responseText);
+                       //var my1 = xhttp1.responseText;
+                       var respObj1 = JSON.parse(xhttp1.responseText);
+                       console.log(respObj1);
+                       var list="<select Name=\"state\"  id=\"state\">";
+                       list+="<option>select-state</option>";
+                       for(var i = 0; i < respObj1.length; i++)
+	                    {
+	                    	list+="<option value=\""+respObj1[i]._id+"\">"+respObj1[i].name+"</option>";
+	                    	//var my = respObj1[i]._id;
+	                    	//console.log(my); 	
 
-				       var table2 = "<table style=\"width:100%\"> \
-				        <tr> \
-				           <th>Id</th> \
-				           <th>Name</th> \
-				        </tr>";
+	                    }
+                       list+="</select Name>";
+                       document.getElementById("states-data").innerHTML = list;
 
-				        for(var i = 0; i < respObj2.length; i++){
-				         	table2 += "<tr> \
-					           <td>"+ respObj2[i].id +"</td> \
-					           <td>"+ respObj2[i].name +"</td> \
-					         </tr>";
-				         }
-				       table2 += "</table>";
+                       var option = document.getElementById("state");
+                       console.log(option);
+                       //my = option.options[option.selectedIndex];
+                       //console.log(my);
+                       //console.log(my.id);
 
-				       document.getElementById("state-data").innerHTML = table2;
-				    }
-				};
-				xhttp.open("GET", "http://localhost:3000/states", true);
-				xhttp.send();
-			}
+                      
+                       for(var i = 0; i < respObj1.length; i++)
+						{	
+                            //respObj1[i].onchange=onselectstate1;
+							document.getElementById("states-data").onchange=onselectstate1;
 
-			document.getElementById("get-count").onclick = function() {
-				var count = parseInt(document.getElementById("myText").value);
-				//console.log("count", count);
+							//console.log(respObj1[i]);
+								
+						}
+                      
 
-				var xhttp = new XMLHttpRequest();
 
-				xhttp.onreadystatechange = function() {
-				if (this.readyState == 4 && this.status == 200) {
-				       // Typical action to be performed when the document is ready:
-				   console.log("data", xhttp.responseText);
 					}
-				};
-				xhttp.open("GET","http://localhost:3000/count?c=count",true);
-				xhttp.send();
+
+
+				}
+				xhttp1.open("GET", "http://localhost:3000/states", true);
+				xhttp1.send();
+				/*document.getElementById("get-city").onclick = function() {
+					console.log("clicked!");
+					var xhttp = new XMLHttpRequest();
+					xhttp.onreadystatechange = function() {
+					    if (this.readyState == 4 && this.status == 200) {
+					       // Typical action to be performed when the document is ready:
+					       console.log("data", xhttp.responseText);
+					       var respObj1 = JSON.parse(xhttp.responseText);
+					       console.log(respObj1[0]);
+					       var table1 = "<table style=\"width:100%\"> \
+					        <tr> \
+					           <th>Id</th> \
+					           <th>Name</th> \
+					        </tr>";
+
+					        for(var i = 0; i < respObj1.length; i++){
+					         	table1 += "<tr> \
+						           <td>"+ respObj1[i].id +"</td> \
+						           <td>"+ respObj1[i].name +"</td> \
+						         </tr>";
+					         }
+					       table1 += "</table>";
+
+					       document.getElementById("city-data").innerHTML = table1;
+					    }
+					};
+					xhttp.open("GET", "http://localhost:3000/city", true);
+					xhttp.send();
+				}
+
+				document.getElementById("get-states").onclick = function() {
+			    	console.log("clicked!");
+					var xhttp = new XMLHttpRequest();
+					xhttp.onreadystatechange = function() {
+					    if (this.readyState == 4 && this.status == 200) {
+					       // Typical action to be performed when the document is ready:
+					       console.log("data", xhttp.responseText);
+					       var respObj2 = JSON.parse(xhttp.responseText);
+					       console.log(respObj2[0]);
+
+					       var table2 = "<table style=\"width:100%\"> \
+					        <tr> \
+					           <th>Id</th> \
+					           <th>Name</th> \
+					        </tr>";
+
+					        for(var i = 0; i < respObj2.length; i++){
+					         	table2 += "<tr> \
+						           <td>"+ respObj2[i].id +"</td> \
+						           <td>"+ respObj2[i].name +"</td> \
+						         </tr>";
+					         }
+					       table2 += "</table>";
+
+					       document.getElementById("state-data").innerHTML = table2;
+					    }
+					};
+					xhttp.open("GET", "http://localhost:3000/states", true);
+					xhttp.send();
+				}
+
+				document.getElementById("get-count").onclick = function() {
+					var count = parseInt(document.getElementById("myText").value);
+					//console.log("count", count);
+
+					var xhttp = new XMLHttpRequest();
+
+					xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+					       // Typical action to be performed when the document is ready:
+					   console.log("data", xhttp.responseText);
+						}
+					};
+					xhttp.open("GET","http://localhost:3000/count?c=count",true);
+					xhttp.send();
+				
+
+				}*/
+
+				/*document.getElementById("").function() {
+
+					var count = parseInt(document.getElementById("myText").value);
+					//console.log("count", count);
+				}*/
+
+				
+				document.getElementById("submit").onclick = function formValidation()
+				{
+					//document.getElementById("submit").
+					//document.getElementById("submit").onclick.
+					var name = document.getElementById('name');
+					var mobile = document.getElementById('mobile');
+					if (inputAlphabet(name, "* For your name please use alphabets only *")) 
+					{
+					 return name.value;
+					}
+
+					// function textNumeric(inputtext, alertMsg) {
+					// var numericExpression = /^[0-9]+$/;
+					// if (inputtext.value.match(numericExpression)) {
+					// return true;
+					// } else {
+					// document.getElementById('p2').innerText = alertMsg; 
+					// inputtext.focus();
+					// return false;
+					// }
+					// }
+
+					function inputAlphabet(inputtext, alertMsg)
+					{
+						var alphaExp = /^[a-zA-Z]+$/;
+						//console.log(ritu);
+						if (inputtext.value.match(alphaExp))
+						{
+						  	document.getElementById('p1').innerText="";
+						  	console.log("clicked");
+						  	if(mobile.value.match(/(7|8|9)\d{9}/))
+						  	{
+							  	document.getElementById('p2').innerText="";
+							  	var myData = {};
+						        myData.name = document.getElementById("name").value;
+						        console.log(myData.name);
+						        myData.mobile = document.getElementById("mobile").value;
+						        console.log(myData.mobile);
+						        myData.address = document.getElementById("address").value;
+						        console.log(myData.address);
+						        myData.city = document.getElementById("city").value;
+						        console.log(myData.city);
+						        myData.state = document.getElementById("state").value;
+						        console.log(myData.state);
+						        if(document.getElementById("female").checked)
+						        myData.gender = document.getElementById("female").value;
+						        else myData.gender = document.getElementById("male").value;
+								var xmlhttp = new XMLHttpRequest();   
+								xmlhttp.open("POST", "http://localhost:3000/insert");
+								xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+								xmlhttp.send(JSON.stringify(myData));
+								document.getElementById("reset").click();
+								console.log(JSON.stringify(myData));
+
+								xmlhttp.onreadystatechange = function()
+								{
+									if (this.readyState == 4 && this.status == 200) 
+									{
+										//console.log("1");
+										var my = JSON.parse(xmlhttp.responseText);
+										var tb = document.getElementById("table");
+										var len = (tb.rows.length);
+										var row = tb.insertRow(len).outerHTML="<tr>\
+										<td><button oid=\"" + my + "\" class=\"delete-btn\" type=\"button\">Delete</button></td>\
+										<td> <button  oid=\"" + my +"\" class=\"update-btn\" type=\"button\">Update</button></td>\
+										<td>"+ myData.name  +"</td> \
+										<td>"+ myData.mobile +"</td> \
+										<td>"+ myData.address +"</td> \
+										<td>"+ myData.city +"</td> \
+										<td>"+ myData.state  +"</td>\
+										<td>"+ myData.gender  +"</td> \
+										</tr>";
+										//return true;
+                                        //console.log("2");
+                                        console.log(my);
+										var newElements = document.querySelectorAll("[oid=\""+ my +"\"]");
+										//console.log(my);
+										console.log("new id =",newElements[1]);
+
+                                        newElements[0].onclick = onDeleteClick;
+										newElements[1].onclick = onUpdateClick;
+                                        document.getElementById("reset").click();
+										console.log(JSON.stringify(myData));
+										//console.log("3");	
+									}
+
+								}
+
+								
+						} 
+						else document.getElementById('p2').innerText  = "+For your mobile please use numbers only"
+					} 
+						else 
+						 {
+							document.getElementById('p1').innerText = alertMsg; // This segment displays the validation rule for name.
+							//alert(alertMsg);
+							inputtext.focus();
+							return false;
+						 }
+						 
+						//  else 
+						//  {
+						// 	document.getElementById('p1').innerText = alertMsg; // This segment displays the validation rule for name.
+						// 	//alert(alertMsg);
+						// 	inputtext.focus();
+						// 	return false;
+						// }
+					}
+			        
+					
+
+					
+		 		}
+
+		 		// document.getElementById("state").onclick = function (){
+     //               //console.log("this",this);
+		 		// }
+
+	        } 
 			
+		</script>
+	</head>
+ 	<body>
+	    <form action="index.html" id="myForm" >
+		<table cellpadding="4" width="50%" align="center"  >
 
-			}*/
+			<tr>
+		  		<td><b><a>Name</a></td>
+		  		<td><input type=text name=name id="name"  size="30" maxlength="20"></td>
+		  		<td><p id="p1"></p></td>
+		    </tr>
 
-			/*document.getElementById("").function() {
+		    <tr>
+		  		<td><a><b>MobileNo</a></td>
+		  		<td><input type="text" name="mobile" id="mobile" size="30" maxlength="10"></td>
+		  		<td><p id="p2"></p></td>
+		    </tr>
 
-				var count = parseInt(document.getElementById("myText").value);
-				//console.log("count", count);
-			}*/
+		  	<tr>
+		  		<td><a><b>Address</a></td>
+		  		<td><textarea name="Address" id="address" size="30" maxlength="40"></textarea></td>
+		    </tr>
 
-			document.getElementById("submit").onclick = function() {
-				console.log("clicked");
-				var myData = {};
-        		myData.name = document.getElementById("name").value;
-        		console.log(myData.name);
-        		myData.mobile = document.getElementById("mobile").value;
-        		console.log(myData.mobile);
-        		myData.address = document.getElementById("address").value;
-        		console.log(myData.address);
-        		myData.city = document.getElementById("city").value;
-        		console.log(myData.city);
-        		myData.state = document.getElementById("state").value;
-        		console.log(myData.state);
-        		if(document.getElementById("female").checked)
-        		myData.gender = document.getElementById("female").value;
-        		else myData.gender = document.getElementById("male").value;
-				var xmlhttp = new XMLHttpRequest();   
-				xmlhttp.open("POST", "http://localhost:3000/insert");
-				xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				xmlhttp.send(JSON.stringify(myData));
-			}
+			<tr><td><a><b>State</a></td>
+			  	<td>
+			  		<div id="states-data"></div>
+			  	</td>  	
+			</tr>
 
-        } 
+			<tr>
+			    <td><a><b>City</a></td>
+			  	<td><div id="city-data"></div>
+			  	</td>
+			</tr>
+			<tr>
+				<td><a><b>Gender</a></td>
+			 	<td><input type="radio" name="gender" value="Female" id="female" checked>Female<br>
+					<input type="radio" name="gender" value="Male" id="male">Male<br>
+				</td>
+			</tr>
+			<tr>
+			  	<td colspan="2"><button type="button" id="submit" class="button">submit</button>
+			  	<input type="reset" id="reset" class="button" >
+			    <button id="update" type="button" class="button" >save changes</button></td>
+
+			</tr>
 		
-</script>
-</head>
-  <body>
-    <form action="index.html" id="myForm">
-	<table cellpadding="4" width="50%" align="center"  >
-
-		<tr>
-	  		<td><b><a>Name</a></td>
-	  		<td><input type=text name=name id="name" size="30"></td>
-	    </tr>
-
-	    <tr>
-	  		<td><a><b>MobileNo</a></td>
-	  		<td><input type="text" name="mobile" id="mobile" size="30" maxlength="10"></td>
-	    </tr>
-
-	  	<tr>
-	  		<td><a><b>Address</a></td>
-	  		<td><textarea name="Address" id="address" size="30"></textarea></td>
-	    </tr>
-
-		<tr>
-		  	<td><a><b>City</a></td>
-		  	<td><select name="city" id="city">
-		      <option value="Uran">Uran</option>
-		      <option value="Surat">Surat</option>
-		      <option value="Punji">Punji</option>
-		      <option value="Mumbai">Mumbai</option>
-		  	</select></td>
-		</tr>
-		<tr>
-		  	<td><a><b>State</a></td>
-		  	<td><select Name="state" id="state">
-		  		<option value="Maharashtra">Maharashtra</option>
-			    <option value="Gujrat">Gujrat</option>
-			    <option value="Goa">Goa</option>
-			    <option value="punjab">Punjab</option>
-		    </select></td>
-		</tr>
-		<tr>
-			<td><a><b>Gender</a></td>
-		 	<td><input type="radio" name="gender" value="Female" id="female" checked>Female<br>
-				<input type="radio" name="gender" value="Male" id="male">Male<br>
-			</td>
-		</tr>
-		<tr>
-		  	<td colspan="2"><button type="button" id="submit">submit</button>
-		  	<button id="update" type="button">save changes</button>
-		  	<input type="reset"></td>
-		</tr>
-	</table>
-	</form>
-	<div id="demo"></div>
-	<div id="user-data"></div>
+		</table>
+		</form>
+		<br></br>
+		<div id="demo"></div>
+		<div id="user-data"></div>
+		<div id="states-data"></div>
+		<div id="city-data"></div>
   </body>
 </html>
