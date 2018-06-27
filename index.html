@@ -140,7 +140,7 @@
                    var option = document.getElementById("state");
                    var my = option.options[option.selectedIndex];
                    console.log(my);
-                   myData1._id = my.getAttribute("value");
+                   myData1._id = my.getAttribute("oid");
                    //myData1 =  document.getElementById("state").value;
                    console.log(myData1._id);
                    var xmlhttp = new XMLHttpRequest(); 
@@ -160,7 +160,7 @@
 	                       //list2+="<option>select-city</option>";
 	                       for(var i = 0; i < respObj2.length; i++)
 		                    {
-		                    	list2+="<option value=\""+respObj2[i]._id+"\">"+respObj2[i].name+"</option>";
+		                    	list2+="<option value=\""+respObj2[i].name+"\">"+respObj2[i].name+"</option>";
 		                    	//var my = respObj1[i]._id;
 		                    	//console.log(my); 	
 
@@ -252,7 +252,7 @@
                        list+="<option>select-state</option>";
                        for(var i = 0; i < respObj1.length; i++)
 	                    {
-	                    	list+="<option value=\""+respObj1[i]._id+"\">"+respObj1[i].name+"</option>";
+	                    	list+="<option oid=\""+respObj1[i]._id+"\" value = \""+respObj1[i].name+"\">"+respObj1[i].name+"</option>";
 	                    	//var my = respObj1[i]._id;
 	                    	//console.log(my); 	
 
