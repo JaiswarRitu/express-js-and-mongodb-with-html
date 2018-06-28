@@ -50,26 +50,81 @@
 				//document.getElementById("city").style.visibility = "hidden";
 				console.log("clicked!");
 				function onUpdateClick()
-				{ 
+				{
 					document.getElementById("update").style.visibility = "visible";
 					document.getElementById("submit").style.visibility = "hidden";	
                     console.log("this",this);
 					var ids = this.getAttribute("oid");
 					var table=document.getElementById("table");
-					for(var i=1;i<table.rows.length;i++)
-					{
-						table.rows[i].onclick=function()
-						{   //console.log("Row index is: " + rows[i].rowIndex);
-						    console.log(this.rowIndex);
-						    var changes = this;
-							document.getElementById("update").style.visibility = "visible";
-							document.getElementById("submit").style.visibility = "hidden";										
-							document.getElementById("name").value=this.cells[2].innerText;
-							document.getElementById("mobile").value=this.cells[3].innerText;
-							document.getElementById("address").value=this.cells[4].innerText;
-							document.getElementById("city").value=this.cells[5].innerText;
-							document.getElementById("state").value=this.cells[6].innerText;
-							if(this.cells[7].innerText=="Female")
+					console.log("table", table);
+
+					var row = this.parentElement.parentElement;
+
+
+					// for(var i=1;i<table.rows.length;i++)
+					// {
+						// console.log("table.rows[i]", table.rows[i]);
+						// table.rows[i].onclick = function() {   //console.log("Row index is: " + rows[i].rowIndex);
+						    //console.log(	this.rowIndex);
+						    console.log("in onclick");
+						    var changes = row;
+						    console.log("this", this);	
+							document.getElementById("name").value = row.cells[2].innerText;
+							document.getElementById("mobile").value = row.cells[3].innerText;
+							document.getElementById("address").value = row.cells[4].innerText;
+							document.getElementById("state").value = row.cells[5].innerText;
+							//document.getElementById("city").value=this.cells[6].innerText;
+							if(document.getElementById("state").value=="maharashtra")
+							{
+								var list2="<select Name=\"city\"  id=\"city\">\
+							    <option value=\"mumbai\">mumbai</option>\
+							    <option value=\"pune\">pune</option>\
+							    <option value=\"nashik\">nashik</option>\
+								</select>";
+								document.getElementById("city-data").style.visibility = "visible";
+								document.getElementById("city-data").innerHTML = list2;
+								document.getElementById("city").value=row.cells[6].innerText;
+                            }
+
+                            else if(document.getElementById("state").value=="uttar prasdesh")
+							{
+								var list2="<select Name=\"city\"  id=\"city\">\
+							    <option value=\"Agra\">Agra</option>\
+							    <option value=\"Allahabad\">Allahabad</option>\
+							    <option value=\"Azamgarh\">Azamgarh</option>\
+								</select>";
+								document.getElementById("city-data").style.visibility = "visible";
+								document.getElementById("city-data").innerHTML = list2;
+								document.getElementById("city").value=row.cells[6].innerText;
+                            }
+
+                            else if(document.getElementById("state").value=="kerela")
+							{
+								var list2="<select Name=\"city\"  id=\"city\">\
+							    <option value=\"kochi\">kochi</option>\
+							    <option value=\"Kovalam\">Kovalam</option>\
+							    <option value=\"Munnar\">Munnar</option>\
+								</select>";
+								document.getElementById("city-data").style.visibility = "visible";
+								document.getElementById("city-data").innerHTML = list2;
+								document.getElementById("city").value=row.cells[6].innerText;
+                            }
+
+                             else if(document.getElementById("state").value=="gujarat")
+							{
+								var list2="<select Name=\"city\"  id=\"city\">\
+							    <option value=\"surat\">surat</option>\
+							    <option value=\"Ahmedabad\">Ahmedabad</option>\
+							    <option value=\"rajkot\">rajkot</option>\
+								</select>";
+								document.getElementById("city-data").style.visibility = "visible";
+								document.getElementById("city-data").innerHTML = list2;
+								document.getElementById("city").value=row.cells[6].innerText;
+                            }
+
+                            
+							
+							if(row.cells[7].innerText=="Female")
 							{
 								document.getElementById("female").checked=true;
 								document.getElementById("male").checked=false;
@@ -84,58 +139,113 @@
 
 						    document.getElementById("update").onclick = function() 
 							{   
-								document.getElementById("submit").style.visibility = "visible";
-								document.getElementById("update").style.visibility = "hidden";
-								console.log("clicked");
-								var myData={};
-								myData._id=ids;
-								myData.name = document.getElementById("name").value;
-								myData.mobile = document.getElementById("mobile").value;
-								myData.address = document.getElementById("address").value;
-								myData.city = document.getElementById("city").value;
-								myData.state = document.getElementById("state").value;
-								console.log(myData.state);
-								if(document.getElementById("female").checked)
-								myData.gender = document.getElementById("female").value;
-								else myData.gender = document.getElementById("male").value;
-								console.log(myData.gender);
-								var xmlhttp = new XMLHttpRequest();  
-								xmlhttp.open("POST", "http://localhost:3000/update");
-								xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-								xmlhttp.send(JSON.stringify(myData));
-								//ocument.getElementById("get-users").action = action;
-								changes.cells[2].innerText=myData.name;
-								changes.cells[3].innerText=myData.mobile;
-								changes.cells[4].innerText=myData.address;
-								changes.cells[5].innerText=myData.city;
-								changes.cells[6].innerText=myData.state;
-								changes.cells[7].innerText=myData.gender;
+								//document.getElementById("submit").style.visibility = "visible";
+								//document.getElementById("update").style.visibility = "hidden";
+								//document.getElementById("city-data").style.visibility = "visible";
+								//console.log("clicked");
+								var name = document.getElementById('name');
+								var mobile = document.getElementById('mobile');
+								if (inputdata(name, "* For your name please use alphabets only *")) 
+								{
+								 return name.value;
+								}
+								
+								function inputdata(inputtext, alertMsg)
+								{
+									var alphaExp = /^[a-zA-Z]+$/;
+									if (inputtext.value.match(alphaExp))
+									{
+									  	document.getElementById('p1').innerText="";
+									  	console.log("clicked");
+									  	if(mobile.value.match(/(7|8|9)\d{9}/))
+									  	{
+									  		document.getElementById('p2').innerText="";
+									  		var myData={};
+											myData._id=ids;
+											myData.name = document.getElementById("name").value;
+											myData.mobile = document.getElementById("mobile").value;
+											myData.address = document.getElementById("address").value;
+											myData.state = document.getElementById("state").value;
+											myData.city = document.getElementById("city").value;
+											console.log(myData.city);
+											if(document.getElementById("female").checked)
+											myData.gender = document.getElementById("female").value;
+											else myData.gender = document.getElementById("male").value;
+											//console.log(myData.gender);
+											var xmlhttp = new XMLHttpRequest();  
+											xmlhttp.open("POST", "http://localhost:3000/update");
+											xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+											xmlhttp.send(JSON.stringify(myData));
+											console.log(myData);
+											if(!myData.name|| !myData.mobile || !myData.address || !myData.city || !myData.state || !myData.gender)
+											{
+												document.getElementById('p3').innerText  = "+all field are manditory"
+											}
+											
+											else
+											{
+												document.getElementById('p3').innerText  = "";
+												changes.cells[2].innerText=myData.name;
+												changes.cells[3].innerText=myData.mobile;
+												changes.cells[4].innerText=myData.address;
+												changes.cells[5].innerText=myData.state;
+												changes.cells[6].innerText=myData.city;
+												changes.cells[7].innerText=myData.gender;
+												onreset();
+												document.getElementById("city-data").style.visibility = "hidden";
+												document.getElementById("submit").style.visibility = "visible";
+												document.getElementById("update").style.visibility = "hidden";
+										  	}
+										 } 	
+									  	else document.getElementById('p2').innerText  = "+For your mobile please use numbers only"
+									} 
+									else 
+									{
+										document.getElementById('p1').innerText = alertMsg; // This segment displays the validation rule for name.
+										//alert(alertMsg);
+										inputtext.focus();
+										return false;
+									} 	
 
-								document.getElementById("reset").click();	
-								console.log(myData);
-		                        //this.cells[2].innerText=myData.name;
 
+								}
 		                    }      
-                        }
-                    }
-                }        
+                        // }
+                    // }
+                }  
+                function onreset(){
+
+                	document.getElementById("update").style.visibility = "hidden";
+                	document.getElementById("submit").style.visibility = "visible";
+                	document.getElementById("name").value="";
+                	document.getElementById("mobile").value="";
+                	document.getElementById("address").value="";
+                	document.getElementById("state").value="state";
+                	document.getElementById("city-data").style.visibility = "hidden";
+                	//document.getElementById("gender").value="";
+
+
+                }      
                 function onDeleteClick()
 				{
+					onreset();
 					var myData1={};
-					console.log(this.getAttribute("oid"));
+					console.log(this);
 					myData1._id = this.getAttribute("oid");
 					// myData1._id = document.getElementsByTagName("button")[i+2].getAttribute("oid");
-					var xmlhttp = new XMLHttpRequest(); 
-					xmlhttp.open("POST", "http://localhost:3000/delete");
-					xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-					xmlhttp.send(JSON.stringify(myData1));
+					var xmlhttp4 = new XMLHttpRequest(); 
+					xmlhttp4.open("POST", "http://localhost:3000/delete");
+					xmlhttp4.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+					xmlhttp4.send(JSON.stringify(myData1));
 					console.log(JSON.stringify(myData1));
+					onreset();
 					var tab = document.getElementById("table");
 					tab.deleteRow(this.parentNode.parentNode.rowIndex);        		
 					//var ids_id = this.getAttribute(oid);
 	            }
                 function onselectstate1()
                 {
+                   document.getElementById("city-data").style.visibility = "visible";
                    var myData1={};
                    var option = document.getElementById("state");
                    var my = option.options[option.selectedIndex];
@@ -171,6 +281,8 @@
 						
 	                }
                 }
+
+                document.getElementById("reset").onclick=onreset; 
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() 
 				{
@@ -186,9 +298,9 @@
 					    	<th>Update</th>\
 					    	<th>Name</th> \
 					    	<th>Mobile</th> \
-					        <th>Address</th> \
-					        <th>City</th> \
+					        <th>Address</th>\
 					        <th>State</th> \
+					        <th>City</th> \
 					        <th>Gender</th> \
 					    </tr>";    
 	                    for(var i = 0; i < respObj.length; i++)
@@ -199,8 +311,8 @@
 							<td>"+ respObj[i].name +"</td> \
 							<td>"+ respObj[i].mobile +"</td> \
 							<td>"+ respObj[i].address +"</td> \
-							<td>"+ respObj[i].city +"</td> \
 							<td>"+ respObj[i].state +"</td>\
+							<td>"+ respObj[i].city +"</td> \
 							<td>"+ respObj[i].gender +"</td> \
 							</tr>";
 						}
@@ -222,13 +334,8 @@
 						//document.getElementById("get-update").innerHTML = table;
 		                console.log("update-btn", document.getElementsByClassName("update-btn"));
 		                var upd_arr = document.getElementsByClassName("update-btn");
-		                for(var i=0;i<upd_arr.length;i++)
-						{
-
+		                for(var i=0;i<upd_arr.length;i++){
 							upd_arr[i].onclick = onUpdateClick;
-							   
-														//console.log(this.document.getElementsByClassName.parentElement)		
-							   
 						}       //console.log(JSON.stringify(myData));
 				    }  
 
@@ -248,8 +355,8 @@
                        //var my1 = xhttp1.responseText;
                        var respObj1 = JSON.parse(xhttp1.responseText);
                        console.log(respObj1);
-                       var list="<select Name=\"state\"  id=\"state\">";
-                       list+="<option>select-state</option>";
+                       var list="<select Name=\"state\" id=\"state\">";
+                       list+="<option value=\"state\"> select-state</option>";
                        for(var i = 0; i < respObj1.length; i++)
 	                    {
 	                    	list+="<option oid=\""+respObj1[i]._id+"\" value = \""+respObj1[i].name+"\">"+respObj1[i].name+"</option>";
@@ -410,10 +517,10 @@
 						        console.log(myData.mobile);
 						        myData.address = document.getElementById("address").value;
 						        console.log(myData.address);
-						        myData.city = document.getElementById("city").value;
-						        console.log(myData.city);
 						        myData.state = document.getElementById("state").value;
 						        console.log(myData.state);
+						        myData.city = document.getElementById("city").value;
+						        console.log(myData.city);
 						        if(document.getElementById("female").checked)
 						        myData.gender = document.getElementById("female").value;
 						        else myData.gender = document.getElementById("male").value;
@@ -421,7 +528,7 @@
 								xmlhttp.open("POST", "http://localhost:3000/insert");
 								xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 								xmlhttp.send(JSON.stringify(myData));
-								document.getElementById("reset").click();
+								//document.getElementById("reset").click();
 								console.log(JSON.stringify(myData));
 
 								xmlhttp.onreadystatechange = function()
@@ -432,34 +539,45 @@
 										var my = JSON.parse(xmlhttp.responseText);
 										var tb = document.getElementById("table");
 										var len = (tb.rows.length);
-										var row = tb.insertRow(len).outerHTML="<tr>\
-										<td><button oid=\"" + my + "\" class=\"delete-btn\" type=\"button\">Delete</button></td>\
-										<td> <button  oid=\"" + my +"\" class=\"update-btn\" type=\"button\">Update</button></td>\
-										<td>"+ myData.name  +"</td> \
-										<td>"+ myData.mobile +"</td> \
-										<td>"+ myData.address +"</td> \
-										<td>"+ myData.city +"</td> \
-										<td>"+ myData.state  +"</td>\
-										<td>"+ myData.gender  +"</td> \
-										</tr>";
-										//return true;
-                                        //console.log("2");
-                                        console.log(my);
-										var newElements = document.querySelectorAll("[oid=\""+ my +"\"]");
-										//console.log(my);
-										console.log("new id =",newElements[1]);
+										if(!myData.name|| !myData.mobile || !myData.address || !myData.city || !myData.state || !myData.gender)
+										{
+											document.getElementById('p3').innerText  = "+all field are manditory"
+										}
+										else
+										{
+											document.getElementById('p3').innerText  = "";
+											var row = tb.insertRow(len).outerHTML="<tr>\
+											<td><button oid=\"" + my + "\" class=\"delete-btn\" type=\"button\">Delete</button></td>\
+											<td> <button  oid=\"" + my +"\" class=\"update-btn\" type=\"button\">Update</button></td>\
+											<td>"+ myData.name  +"</td> \
+											<td>"+ myData.mobile +"</td> \
+											<td>"+ myData.address +"</td> \
+											<td>"+ myData.state  +"</td>\
+											<td>"+ myData.city +"</td> \
+											<td>"+ myData.gender  +"</td> \
+											</tr>";
+										
+										
+											//return true;
+	                                        //console.log("2");
+	                                        //console.log(my);
+											var newElements = document.querySelectorAll("[oid=\""+ my +"\"]");
+											//console.log(my);
+											console.log("new id =",newElements[1]);
 
-                                        newElements[0].onclick = onDeleteClick;
-										newElements[1].onclick = onUpdateClick;
-                                        document.getElementById("reset").click();
-										console.log(JSON.stringify(myData));
+	                                        newElements[0].onclick = onDeleteClick;
+											newElements[1].onclick = onUpdateClick;
+	                                        onreset();
+	                                        //document.getElementById("city-data").style.visibility = "hidden";
+											console.log(JSON.stringify(myData));
+									    }
 										//console.log("3");	
 									}
 
 								}
 
 								
-						} 
+						    } 
 						else document.getElementById('p2').innerText  = "+For your mobile please use numbers only"
 					} 
 						else 
@@ -495,7 +613,9 @@
  	<body>
 	    <form action="index.html" id="myForm" >
 		<table cellpadding="4" width="50%" align="center"  >
-
+            <tr>
+            	<td><p id="p3"></p></td>
+            </tr>
 			<tr>
 		  		<td><b><a>Name</a></td>
 		  		<td><input type=text name=name id="name"  size="30" maxlength="20"></td>
@@ -532,7 +652,7 @@
 			</tr>
 			<tr>
 			  	<td colspan="2"><button type="button" id="submit" class="button">submit</button>
-			  	<input type="reset" id="reset" class="button" >
+			  	<button type="button" id="reset" class="button">reset</button>
 			    <button id="update" type="button" class="button" >save changes</button></td>
 
 			</tr>
